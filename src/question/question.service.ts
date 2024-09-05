@@ -11,8 +11,13 @@ export class QuestionService {
     ) {}
 
     // 创建
-    async create(createCatDto: QuestionDto): Promise<Question> {
-        const createdQuestion = new this.qusetionModel(createCatDto);
+    async create(createCatDto: QuestionDto, username: string) {
+        const createdQuestion = new this.qusetionModel({
+            ...createCatDto,
+            author: username,
+        });
+        console.log(createdQuestion, '==asdasdas');
+
         return createdQuestion.save();
     }
 
@@ -32,7 +37,7 @@ export class QuestionService {
     }
 
     // 更新
-    async update(id: string, qusetion: Question) {
+    async update(id: string, qusetion: QuestionDto) {
         return this.qusetionModel.findByIdAndUpdate({ _id: id }, qusetion);
     }
 

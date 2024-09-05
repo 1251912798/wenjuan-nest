@@ -9,6 +9,7 @@ import {
     Query,
     Post,
     Delete,
+    Request,
 } from '@nestjs/common';
 import { QuestionDto } from './dot/question.dto';
 import { QuestionService } from './question.service';
@@ -38,8 +39,11 @@ export class QuestionController {
     }
     // 创建问卷
     @Post()
-    createQuestion(@Body() questionDto: QuestionDto) {
-        return this.questionService.create(questionDto);
+    createQuestion(@Request() req, @Body() questionDto: QuestionDto) {
+        console.log(req.user, '====');
+
+        const { username } = req.user;
+        return this.questionService.create(questionDto, username);
     }
     // 获取问卷列表
     @Get('list')

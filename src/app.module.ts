@@ -11,7 +11,9 @@ import { AuthModule } from './auth/auth.module';
         QuestionModule,
         UserModule,
         AuthModule,
-        ConfigModule.forRoot(),
+        ConfigModule.forRoot({
+            isGlobal: true,
+        }),
         MongooseModule.forRoot(
             `mongodb://${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/${process.env.MONGO_DATABASE}`,
         ),

@@ -1,10 +1,13 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UserDto } from 'src/user/dot/user.dot';
 import { UserService } from 'src/user/user.service';
-
+import { JwtService } from '@nestjs/jwt';
 @Injectable()
 export class AuthService {
-    constructor(private readonly userServer: UserService) {}
+    constructor(
+        private readonly userServer: UserService,
+        private jwtService: JwtService,
+    ) {}
 
     async signIn(userInfo: UserDto) {
         const { username, password } = userInfo;
@@ -15,6 +18,9 @@ export class AuthService {
         }
 
         const { password: pwd, ...userData } = user.toObject(); // eslint-disable-line
-        return userData;
+
+        return {
+            token: await this.jwtService.signAsync(userData),
+        };
     }
 }
