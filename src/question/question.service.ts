@@ -6,7 +6,8 @@ import { QuestionDto } from './dot/question.dto';
 @Injectable()
 export class QuestionService {
     constructor(
-        @InjectModel(Question.name) private qusetionModel: Model<Question>,
+        @InjectModel(Question.name)
+        private readonly qusetionModel: Model<Question>,
     ) {}
 
     // 创建
