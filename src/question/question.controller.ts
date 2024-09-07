@@ -10,9 +10,11 @@ import {
     Post,
     Delete,
     Request,
+    Res,
 } from '@nestjs/common';
 import { QuestionDto } from './dot/question.dto';
 import { QuestionService } from './question.service';
+import { sendSuccessResponse } from 'src/auth/sendResponse';
 
 @Controller('question')
 export class QuestionController {
@@ -20,30 +22,40 @@ export class QuestionController {
     // 分页
     @Get()
     async getQuestions(
+        @Request() req: any,
         @Query('keyword') keyword: string,
         @Query('page') page: number,
         @Query('pageSize') pageSize: number,
+        @Query('isStar') isStar: boolean,
+        @Query('isDeleted') isDeleted: boolean,
     ) {
+        const { username } = req.user;
         const list = await this.questionService.findAllList({
             keyword,
             page,
             pageSize,
+            isStar,
+            isDeleted,
+            author: username,
         });
 
-        const count = await this.questionService.findAllCount({ keyword });
+        const total = await this.questionService.findAllCount({
+            keyword,
+            isStar,
+            isDeleted,
+            author: username,
+        });
 
         return {
             list,
-            count,
+            total,
         };
     }
     // 创建问卷
     @Post()
-    createQuestion(@Request() req, @Body() questionDto: QuestionDto) {
-        console.log(req.user, '====');
-
+    createQuestion(@Request() req: any) {
         const { username } = req.user;
-        return this.questionService.create(questionDto, username);
+        return this.questionService.create(username);
     }
     // 获取问卷列表
     @Get('list')
@@ -56,14 +68,48 @@ export class QuestionController {
         return this.questionService.findOne(id);
     }
     // 删除问卷
-    @Delete(':id')
-    deleteQuestion(@Param('id') id: string) {
-        return this.questionService.delete(id);
-    }
+    // @Delete(':id')
+    // deleteQuestion(@Param('id') id: string, @Request() req: any) {
+    //     const { username } = req.user;
+    //     return this.questionService.delete(id, username);
+    // }
     // 更新问卷
     @Patch(':id')
-    updateQuestion(@Param('id') id: string, @Body() qusetion: QuestionDto) {
-        return this.questionService.update(id, qusetion);
+    updateQuestion(
+        @Param('id') id: string,
+        @Body() qusetion: QuestionDto,
+        @Request() req: any,
+    ) {
+        const { username } = req.user;
+        console.log(qusetion);
+
+        return this.questionService.update(id, qusetion, username);
+    }
+
+    // 批量删除
+    @Delete()
+    async delMany(
+        @Body() ids: string[] = [],
+        @Request() req: any,
+        @Res() res: any,
+    ) {
+        const { username } = req.user;
+        if (!ids.length) return;
+        return this.questionService
+            .delMany(ids, username)
+            .then(() => {
+                return sendSuccessResponse(res, '问卷删除成功!');
+            })
+            .catch((error) => {
+                throw new HttpException(error, HttpStatus.BAD_REQUEST);
+            });
+    }
+
+    // 复制问卷
+    @Post('copy/:id')
+    copyQuestion(@Param('id') id: string, @Request() req: any) {
+        const { username } = req.user;
+        return this.questionService.copyQuestion(id, username);
     }
 
     @Get('/error')

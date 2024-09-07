@@ -27,7 +27,7 @@ export class Question {
     isStar: boolean;
 
     @Prop({ default: false })
-    isDelete: boolean;
+    isDeleted: boolean;
 
     @Prop()
     componentList: ComponentType[];
