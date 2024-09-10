@@ -7,6 +7,7 @@ import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { AnswerModule } from './answer/answer.module';
+import { StatModule } from './stat/stat.module';
 @Module({
     imports: [
         QuestionModule,
@@ -17,6 +18,7 @@ import { AnswerModule } from './answer/answer.module';
         MongooseModule.forRoot(
             `mongodb://${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/${process.env.MONGO_DATABASE}`,
         ),
+        StatModule,
     ],
     controllers: [AppController],
     providers: [AppService],

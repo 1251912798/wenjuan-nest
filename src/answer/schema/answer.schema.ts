@@ -12,7 +12,7 @@ export class Answer {
 
     @Prop()
     answerList: {
-        componentFeId: string; // fe_id
+        componentId: string; // fe_id
         value: string[];
     }[];
 }

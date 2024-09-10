@@ -15,6 +15,7 @@ import {
 import { QuestionDto } from './dot/question.dto';
 import { QuestionService } from './question.service';
 import { sendSuccessResponse } from 'src/auth/sendResponse';
+import { Public } from 'src/auth/auth.decorator';
 
 @Controller('question')
 export class QuestionController {
@@ -63,6 +64,7 @@ export class QuestionController {
         return this.questionService.findAll();
     }
     // 获取单个问卷
+    @Public()
     @Get(':id')
     getQuestionById(@Param('id') id: string) {
         return this.questionService.findOne(id);
@@ -81,8 +83,6 @@ export class QuestionController {
         @Request() req: any,
     ) {
         const { username } = req.user;
-        console.log(qusetion);
-
         return this.questionService.update(id, qusetion, username);
     }
 
@@ -120,8 +120,6 @@ export class QuestionController {
     @Patch(':id')
     updateQuestions(@Param('id') id: string, @Body() questionDto: QuestionDto) {
         const { title, desc } = questionDto;
-        console.log(questionDto, 'question');
-
         return {
             id,
             title,
